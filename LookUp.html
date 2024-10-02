@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shared Link Lookup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Figtree:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lora', serif;
+            margin: 0;
+            background-color: #B2B5B7; /* Fog */
+            color: #000000; /* Black */
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 20px auto;
+            width: 90%;
+            position: relative;
+        }
+        h1 {
+            font-family: 'Figtree', sans-serif;
+            margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: 700;
+            color: #00558C; /* Blue 3 */
+        }
+        p {
+            font-size: 16px;
+            color: #000000; /* Black */
+        }
+        .input-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 20px 0;
+        }
+        input[type="text"] {
+            width: 100%;
+            max-width: 480px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #B2B5B7; /* Fog */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            outline: none;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            margin-bottom: 10px;
+        }
+        input[type="text"]:focus {
+            border-color: #00558C; /* Blue 3 */
+        }
+        button {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            background-color: #F2B231; /* Matilija */
+            color: white;
+            font-size: 16px;
+            font-family: 'Figtree', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            margin-left: 0;
+            box-shadow: 0 4px 12px rgba(242, 178, 49, 0.3);
+            transition: background-color 0.3s, box-shadow 0.3s;
+            width: 100%;
+            max-width: 200px;
+        }
+        button:hover {
+            background-color: #EE811B; /* Poppy */
+            box-shadow: 0 6px 16px rgba(238, 129, 27, 0.4);
+        }
+        /* Updated .new-lookup-button styles */
+        .new-lookup-button {
+            display: block;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            background-color: #C7DDDF; /* Sky */
+            color: #666666; /* Dark Gray */
+            font-size: 14px;
+            margin: 20px auto;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: none; /* Hidden initially */
+            box-shadow: none;
+        }
+        .new-lookup-button:hover {
+            background-color: #B2B5B7; /* Fog */
+        }
+        .example-link {
+            color: #666666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        #result {
+            margin-top: 30px;
+            font-size: 16px;
+            color: #000000; /* Black */
+            text-align: left;
+        }
+        a {
+            color: #00558C; /* Blue 3 */
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .notice {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #000000; /* Black */
+            text-align: left;
+            border-top: 1px solid #eeeeee;
+            padding-top: 20px;
+        }
+        @media (min-width: 768px) {
+            .input-group {
+                flex-direction: row;
+            }
+            input[type="text"] {
+                margin-right: 10px;
+                margin-bottom: 0;
+            }
+            button {
+                width: auto;
+            }
+        }
+        /* Loading Indicator Styles */
+        #loadingOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            z-index: 1000;
+        }
+        .progress-bar-container {
+            width: 80%;
+            background-color: #e0e0e0;
+            border-radius: 25px;
+            overflow: hidden;
+            height: 20px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #00558C; /* Blue 3 */
+            animation: progressAnimation 2s infinite;
+        }
+        @keyframes progressAnimation {
+            0% { width: 0%; }
+            50% { width: 100%; }
+            100% { width: 0%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Shared Link Lookup</h1>
+        <p>Enter the Shared Link URL to find out how to access this content.</p>
+
+        <div class="input-group">
+            <input type="text" id="inputURL" placeholder="Enter Shared Link URL here" onkeyup="handleEnter(event)" aria-label="Shared Link URL">
+            <button onclick="lookupURL()">Lookup</button>
+        </div>
+        
+        <p class="example-link">example: https://postbox.box.com/s/umgv8vxogjyx2fn80806o107fdk9aw3y</p>
+
+        <div id="result"></div>
+        <div id="loadingOverlay">
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
+
+        <button class="new-lookup-button" id="newLookupButton" onclick="newLookup()">New Lookup</button>
+
+        <p class="notice">
+            <strong>Notice:</strong> Share Links from Box have been disabled because they allowed public access without sign-in. Through the efforts of the Box Health project, all access is now controlled by your Box permissions and managed by the Box Folder Owner. As a result, you may no longer have access to this content. Please update your records and any associated documentation to use the secure Box URL for accessing POST content.
+        </p>
+
+    </div>
+
+    <script>
+        let lookupTable = {};
+
+        // Function to fetch the lookup table from the JSON file
+        async function fetchLookupTable() {
+            const loadingDiv = document.getElementById('loadingOverlay');
+            // Show the loading indicator during initial data fetch
+            loadingDiv.style.display = 'flex';
+
+            try {
+                const response = await fetch('lookupTable.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                lookupTable = await response.json();
+                console.log('Lookup table loaded successfully.');
+            } catch (error) {
+                console.error('Failed to load lookup table:', error);
+                document.getElementById('result').innerHTML = "<span style='color: red;'>Failed to load lookup data. Please try again later.</span>";
+            } finally {
+                // Hide the loading indicator after data fetch
+                loadingDiv.style.display = 'none';
+            }
+        }
+
+        // Fetch the lookup table when the page loads
+        window.onload = fetchLookupTable;
+
+        function handleEnter(event) {
+            if (event.key === "Enter") {
+                lookupURL();
+            }
+        }
+
+        function isValidURL(url) {
+            const pattern = new RegExp('^(https?:\\/\\/)' + // protocol
+                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
+                '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+                '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+                '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+            return !!pattern.test(url);
+        }
+
+        function lookupURL() {
+            const SharedLinkURL = document.getElementById('inputURL').value.trim();
+            const resultDiv = document.getElementById('result');
+            const newLookupButton = document.getElementById('newLookupButton');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
+            if (SharedLinkURL === "") {
+                resultDiv.innerHTML = "<span style='color: red;'>Please enter a URL.</span>";
+                return;
+            }
+
+            if (!isValidURL(SharedLinkURL)) {
+                resultDiv.innerHTML = "<span style='color: red;'>Please enter a valid URL.</span>";
+                return;
+            }
+
+            // Show the loading indicator
+            loadingOverlay.style.display = 'flex';
+
+            // Simulate a delay for demonstration purposes (remove in production)
+            // await new Promise(resolve => setTimeout(resolve, 1000));
+
+            const data = lookupTable[SharedLinkURL];
+
+            // Hide the loading indicator
+            loadingOverlay.style.display = 'none';
+
+            if (data) {
+                resultDiv.innerHTML = `
+                    <p><strong>Box URL:</strong> <a href="${data.BoxURL}" target="_blank">${data.BoxURL}</a></p>
+                    <p><strong>Box Folder Owner:</strong> ${data.BoxOwner}</p>
+                    <p><strong>Item Name:</strong> ${data.ItemName}</p>
+                    <p><strong>Shared Item Type:</strong> ${data.SharedItemType}</p>
+                    <p><strong>Created Date:</strong> ${data.CreatedDate}</p>
+                    <p><strong>Path:</strong> ${data.Path}</p>
+                    <p><strong>Permissions:</strong> ${data.Permissions}</p>
+                `;
+                newLookupButton.style.display = 'block';
+            } else {
+                resultDiv.innerHTML = `
+                    <span style='color: red;'>No associated information found for the provided input.</span>
+                    <p>Please check the URL for any typos or contact support for further assistance.</p>
+                `;
+                newLookupButton.style.display = 'block';
+            }
+        }
+
+        function newLookup() {
+            document.getElementById('inputURL').value = '';
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('newLookupButton').style.display = 'none';
+            document.getElementById('inputURL').focus();
+        }
+
+        // Optional: Test Lookup Function
+        function testLookup() {
+            const testURL = "https://postbox.box.com/s/umgv8vxogjyx2fn80806o107fdk9aw3y";
+            const data = lookupTable[testURL];
+            console.log('Test Lookup Data:', data);
+            alert(data ? data.BoxURL : 'No data found');
+        }
+    </script>
+
+</body>
+</html>
