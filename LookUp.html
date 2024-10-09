@@ -239,7 +239,7 @@
         }
 
         function lookupURL() {
-            const SharedLinkURL = document.getElementById('inputURL').value.trim();
+            let SharedLinkURL = document.getElementById('inputURL').value.trim();
             const resultDiv = document.getElementById('result');
             const newLookupButton = document.getElementById('newLookupButton');
             const loadingOverlay = document.getElementById('loadingOverlay');
@@ -254,11 +254,16 @@
                 return;
             }
 
+            let wasReformatted = false;
+
+            // Remove '.app' from the domain if present
+            if (SharedLinkURL.includes('.app.box.com')) {
+                SharedLinkURL = SharedLinkURL.replace('.app.box.com', '.box.com');
+                wasReformatted = true;
+            }
+
             // Show the loading indicator
             loadingOverlay.style.display = 'flex';
-
-            // Simulate a delay for demonstration purposes (remove in production)
-            // await new Promise(resolve => setTimeout(resolve, 1000));
 
             const data = lookupTable[SharedLinkURL];
 
@@ -266,7 +271,12 @@
             loadingOverlay.style.display = 'none';
 
             if (data) {
+                let reformatMessage = '';
+                if (wasReformatted) {
+                    reformatMessage = `<p><em>Note: The URL you entered was reformatted to <strong>${SharedLinkURL}</strong> for the lookup.</em></p>`;
+                }
                 resultDiv.innerHTML = `
+                    ${reformatMessage}
                     <p><strong>Box URL:</strong> <a href="${data.BoxURL}" target="_blank">${data.BoxURL}</a></p>
                     <p><strong>Box Folder Owner:</strong> ${data.BoxOwner}</p>
                     <p><strong>Item Name:</strong> ${data.ItemName}</p>
@@ -277,7 +287,12 @@
                 `;
                 newLookupButton.style.display = 'block';
             } else {
+                let reformatMessage = '';
+                if (wasReformatted) {
+                    reformatMessage = `<p><em>Note: The URL you entered was reformatted to <strong>${SharedLinkURL}</strong> for the lookup.</em></p>`;
+                }
                 resultDiv.innerHTML = `
+                    ${reformatMessage}
                     <span style='color: red;'>No associated information found for the provided input.</span>
                     <p>Please check the URL for any typos or contact support for further assistance.</p>
                 `;
