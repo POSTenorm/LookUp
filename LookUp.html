@@ -239,7 +239,7 @@
         }
 
         function lookupURL() {
-            const SharedLinkURL = document.getElementById('inputURL').value.trim();
+            let SharedLinkURL = document.getElementById('inputURL').value.trim();
             const resultDiv = document.getElementById('result');
             const newLookupButton = document.getElementById('newLookupButton');
             const loadingOverlay = document.getElementById('loadingOverlay');
@@ -254,11 +254,11 @@
                 return;
             }
 
+            // **New Code: Remove '.app' from the domain if present**
+            SharedLinkURL = SharedLinkURL.replace('.app.box.com', '.box.com');
+
             // Show the loading indicator
             loadingOverlay.style.display = 'flex';
-
-            // Simulate a delay for demonstration purposes (remove in production)
-            // await new Promise(resolve => setTimeout(resolve, 1000));
 
             const data = lookupTable[SharedLinkURL];
 
