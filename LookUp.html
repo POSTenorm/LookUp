@@ -5,8 +5,165 @@
     <title>Shared Link Lookup</title>
     <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Figtree:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Your existing CSS styles remain unchanged */
-        /* ... (existing CSS code) ... */
+        body {
+            font-family: 'Lora', serif;
+            margin: 0;
+            background-color: #B2B5B7; /* Fog */
+            color: #000000; /* Black */
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 20px auto;
+            width: 90%;
+            position: relative;
+        }
+        h1 {
+            font-family: 'Figtree', sans-serif;
+            margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: 700;
+            color: #00558C; /* Blue 3 */
+        }
+        p {
+            font-size: 16px;
+            color: #000000; /* Black */
+        }
+        .input-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 20px 0;
+        }
+        input[type="text"] {
+            width: 100%;
+            max-width: 480px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #B2B5B7; /* Fog */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            outline: none;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            margin-bottom: 10px;
+        }
+        input[type="text"]:focus {
+            border-color: #00558C; /* Blue 3 */
+        }
+        button {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            background-color: #F2B231; /* Matilija */
+            color: white;
+            font-size: 16px;
+            font-family: 'Figtree', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            margin-left: 0;
+            box-shadow: 0 4px 12px rgba(242, 178, 49, 0.3);
+            transition: background-color 0.3s, box-shadow 0.3s;
+            width: 100%;
+            max-width: 200px;
+        }
+        button:hover {
+            background-color: #EE811B; /* Poppy */
+            box-shadow: 0 6px 16px rgba(238, 129, 27, 0.4);
+        }
+        /* Updated .new-lookup-button styles */
+        .new-lookup-button {
+            display: block;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            background-color: #C7DDDF; /* Sky */
+            color: #666666; /* Dark Gray */
+            font-size: 14px;
+            margin: 20px auto;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: none; /* Hidden initially */
+            box-shadow: none;
+        }
+        .new-lookup-button:hover {
+            background-color: #B2B5B7; /* Fog */
+        }
+        .example-link {
+            color: #666666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        #result {
+            margin-top: 30px;
+            font-size: 16px;
+            color: #000000; /* Black */
+            text-align: left;
+        }
+        a {
+            color: #00558C; /* Blue 3 */
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .notice {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #000000; /* Black */
+            text-align: left;
+            border-top: 1px solid #eeeeee;
+            padding-top: 20px;
+        }
+        @media (min-width: 768px) {
+            .input-group {
+                flex-direction: row;
+            }
+            input[type="text"] {
+                margin-right: 10px;
+                margin-bottom: 0;
+            }
+            button {
+                width: auto;
+            }
+        }
+        /* Loading Indicator Styles */
+        #loadingOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            z-index: 1000;
+        }
+        .progress-bar-container {
+            width: 80%;
+            background-color: #e0e0e0;
+            border-radius: 25px;
+            overflow: hidden;
+            height: 20px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #00558C; /* Blue 3 */
+            animation: progressAnimation 2s infinite;
+        }
+        @keyframes progressAnimation {
+            0% { width: 0%; }
+            50% { width: 100%; }
+            100% { width: 0%; }
+        }
     </style>
 </head>
 <body>
@@ -82,7 +239,7 @@
         }
 
         function lookupURL() {
-            let SharedLinkURL = document.getElementById('inputURL').value.trim();
+            const SharedLinkURL = document.getElementById('inputURL').value.trim();
             const resultDiv = document.getElementById('result');
             const newLookupButton = document.getElementById('newLookupButton');
             const loadingOverlay = document.getElementById('loadingOverlay');
@@ -97,11 +254,11 @@
                 return;
             }
 
-            // **New Code: Remove '.app' from the domain if present**
-            SharedLinkURL = SharedLinkURL.replace('//postbox.app.box.com/', '//postbox.box.com/');
-
             // Show the loading indicator
             loadingOverlay.style.display = 'flex';
+
+            // Simulate a delay for demonstration purposes (remove in production)
+            // await new Promise(resolve => setTimeout(resolve, 1000));
 
             const data = lookupTable[SharedLinkURL];
 
